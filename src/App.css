@@ -1,0 +1,30 @@
+body{
+    
+}
+.file-info{
+    font-family: 'Lato', sans-serif;
+    font-size: 15px;
+    font-weight: bolder !important;
+}
+.file-info-bold{
+    font-size: 18px;
+font-family: 'Source Sans Pro', sans-serif;
+
+}
+h1.text-center{
+    color:  rgb(8, 34, 179);
+    font-family: 'Source Sans Pro', sans-serif;
+}
+.home{
+    margin-top: 20px;
+}
+
+
+@media  (max-width:768px){
+    .home{
+        padding:0 10px !important;
+        
+    }
+  
+
+}
