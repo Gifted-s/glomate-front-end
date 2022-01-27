@@ -1,13 +1,44 @@
 import React from 'react'
-import {Route} from "react-router-dom"
+import { Route, withRouter,Redirect } from "react-router-dom"
+import Add_Material from '../Home/Add_Material'
+import Courses from '../Home/Courses'
+import Departments from '../Home/Dept'
+import Footer from '../Home/Footer'
 import Home from '../Home/Home'
+import Levels from '../Home/levels'
+import NotFound from '../Home/NotFound'
 
-function Routes() {
+function Routes(props) {
     return (
         <>
-             <Route path="/" exact component={Home} ></Route>
+
+            <div >
+                <button style={{ position: "absolute", left: 10, top: 20, borderRadius: 18 }} onClick={() => {
+                    props.history.push("/")
+                }} className="btn btn-primary">
+                    <i class="fas fa-home"></i> Go home 
+                </button>
+            </div>
+            <div >
+                <button style={{ position: "absolute", right: 10, top: 20, borderRadius: 18 }} onClick={() => {
+                    props.history.push("/add-material")
+                }} className="btn btn-primary">
+                    Add Material <i class="fas fa-plus-square"></i>
+                </button>
+            </div>
+            <div style={{ marginTop: 70 }}>
+                <Route path="/" exact component={Departments} ></Route>
+                <Route path="/courses"  component={Courses} ></Route>
+                <Route path="/course"  component={Home} ></Route>
+                <Route path="/levels"  component={Levels} ></Route>
+                <Route path="/add-material" component={Add_Material} ></Route>
+                {/* <Route  exact={true} component={NotFound} /> */}
+                <Footer />
+               
+            </div>
+
         </>
     )
 }
 
-export default Routes
+export default withRouter(Routes)

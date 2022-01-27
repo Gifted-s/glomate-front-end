@@ -1,28 +1,46 @@
-const data = [
+const departments = [
 {
-    name:"File 1",
-    type:"Mp3",
-    size:"40mb",
-    date_added:"October 12, 2021",
-    download_link:"https://new-img.movavi.com/pages/0013/09/3312d71dd187d0da2cbb011f71ddf9aa5535c5d6.webp"
+  name:"Software Engineering",
+  last_updated:"October 12, 2021",
+  school:"Computing"
 },
 {
-    name:"File 1",
-    type:"Mp3",
-    size:"40mb",
-    date_added:"October 12, 2021",
-    download_link:"https://new-img.movavi.com/pages/0013/09/3312d71dd187d0da2cbb011f71ddf9aa5535c5d6.webp"
-},
-{
-    name:"File 1",
-    type:"Mp3",
-    size:"40mb",
-    date_added:"October 12, 2021",
-    download_link:"https://new-img.movavi.com/pages/0013/09/3312d71dd187d0da2cbb011f71ddf9aa5535c5d6.webp"
-}
+    name:"Computer Science",
+    last_updated:"October 12, 2021",
+    school:"Computing"
+  },
+
+  {
+    name:"Information Systems",
+    last_updated:"October 12, 2021",
+    school:"Computing"
+  },
+
+  {
+    name:"Cyber Security Science",
+    last_updated:"October 12, 2021",
+    school:"Computing"
+  },
+
+  {
+    name:"Urban And Regional Planning",
+    last_updated:"October 12, 2021",
+    school:"Computing"
+  },
+
+  {
+    name:"Electrical Electonics Engineering",
+    last_updated:"October 12, 2021",
+    school:"Engineering"
+  },
+  {
+    name:"Mechanical Engineering",
+    last_updated:"October 12, 2021",
+    school:"Engineering"
+  }
 
 ]
 
-export default data
+export default departments
 
 

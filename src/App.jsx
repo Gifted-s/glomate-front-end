@@ -5,6 +5,7 @@ import Routes from './components/Routes/Routes'
 import { ToastProvider, useToasts } from 'react-toast-notifications';
 import "react-datetime/css/react-datetime.css";
 import './config/firebase';
+import NotFound from './components/Home/NotFound';
 
 function App() {
   return (
@@ -13,7 +14,9 @@ function App() {
       <BrowserRouter>
     
         <Switch>
-          <Routes />
+        <Routes />
+        
+          
         </Switch>
         
       </BrowserRouter>

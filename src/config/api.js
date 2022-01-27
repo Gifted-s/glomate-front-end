@@ -1,5 +1,5 @@
 const apiConfig = {
-    // root:"http://localhost:8080"
+    //root:"http://localhost:8080"
     root:"https://glomate.herokuapp.com"
 }
 
