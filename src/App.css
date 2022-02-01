@@ -112,15 +112,28 @@ form.u input.form-control{
     padding: 8px;
     border-radius: 10px;
 }
-@media  (max-width:768px){
+/* .fl{
+    font-family: 'Dongle', sans-serif  !important;
 
+} */
+@media  (max-width:768px){
+  .kl{
+position: fixed !important;
+bottom: 20px;
+background-color: rgba(40, 143, 240, 0.964) !important;
+color: white !important;
+right: 20px !important;
+width: 50px;
+height: 50px;
+z-index: 2;
+}
     .yu{
         margin-top: 150px !important;
         
     }
     .sr{
         width: 100% !important;
-        top: 70px !important;
+       
         padding:10px;
         margin-left:-12px;
 

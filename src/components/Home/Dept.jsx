@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Link } from "react-router-dom"
 import { Spinner } from 'reactstrap';
 
@@ -7,17 +7,14 @@ import swal from '@sweetalert/with-react'
 import { getStorage, ref, uploadBytesResumable, getDownloadURL, connectStorageEmulator } from "firebase/storage";
 import apiConfig from '../../config/api';
 function Departments(props) {
-    const [text, setText] = useState('')
     const [departments, setDepartments] = useState([])
     const [once, setOnce] = useState(0)
     const [search_result, setSearchResult] = useState([])
     const [construct_string, setConstructString] = useState([])
-    const [link, setLink] = useState("")
     const [page, setPage] = useState(0)
     const [searchingSchool, setSearchSchool] = useState(false)
     const [page_size, setPageSize] = useState(0)
     const [schools, setSchools] = useState([])
-
     const [navBackground, setNavBackground] = useState(false)
     const navRef = useRef()
     navRef.current = navBackground
@@ -27,14 +24,14 @@ function Departments(props) {
         const handleScroll = () => {
             const show = window.scrollY > 50
             if (navRef.current !== show) {
-              setNavBackground(show)
+                setNavBackground(show)
             }
-          }
-          document.addEventListener('scroll', handleScroll)
+        }
+        document.addEventListener('scroll', handleScroll)
     }, [once])
 
     function search(text) {
-        window.scrollTo(0,0)
+        window.scrollTo(0, 0)
         setPage(0)
         setSearchSchool(false)
         let result = []
@@ -66,7 +63,7 @@ function Departments(props) {
 
     function searchSchool(text) {
         setPage(0)
-        window.scrollTo(0,0)
+        window.scrollTo(0, 0)
         setSearchSchool(true)
         let result = []
         let temp_construct_string = []
@@ -85,7 +82,6 @@ function Departments(props) {
             }
 
         }
-        console.log(result)
         if (result.length === departments.length) {
             setSearchResult([])
             setConstructString([])
@@ -93,7 +89,6 @@ function Departments(props) {
         }
         else {
             setSearchResult(result)
-            console.log(temp_construct_string)
             setConstructString(temp_construct_string)
         }
     }
@@ -114,7 +109,6 @@ function Departments(props) {
             }
         })
         const result = await response.json()
-        console.log(result)
         if (result.status === "success") {
             if (result.body) {
                 console.log(Math.floor(result.body.length / 8), "size")
@@ -141,12 +135,12 @@ function Departments(props) {
 
             <div className="container">
                 < h1 className="text-center mt-4 yu">Departments</h1>
-                { searchingSchool && <p className="my-2"> <span style={{ color: "black" }}>School of {search_result[0].school}</span>   </p>}
-                <div style={{ transition: '1s ease',backgroundColor: navBackground ? 'rgba(0,0,0,0.8)' : 'transparent', position:"fixed", top:navBackground ? 0 : 10}} className="col-md-6 offset-md-1 justify-content-between d-flex align-items-center sr">
+                {searchingSchool && <p className="my-2"> <span style={{ color: "black" }}>School of {search_result[0].school}</span>   </p>}
+                <div style={{ transition: '1s ease', backgroundColor: navBackground ? 'rgba(0,0,0,0.8)' : 'transparent', position: "fixed", top: window.innerWidth<=768  ? navBackground ?0 : 60: 0 }} className="col-md-6 offset-md-1 justify-content-between d-flex align-items-center sr">
                     {/* {
                             link.length > 0 && <span>{isUploading ? `Uploading....${Math.floor(progress)}% complete` : ""}</span>
                         } */}
-                    <span  className="justify-content-between col-md-12 d-flex align-items-center">
+                    <span className="justify-content-between col-md-12 d-flex align-items-center">
                         <input
                             type="text" style={{
                                 marginRight: 10,
@@ -167,12 +161,12 @@ function Departments(props) {
                         </span>
 
                         <li className="nav-item dropdown btn btn-primary col-md-3" style={{ borderRadius: 30, fontSize: 13 }}>
-                            <a className="nav-link" style={{ color: "white", padding: 3 }} data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"> filter with school  <i class="fas fa-sort-amount-down"></i></a>
+                            <a className="nav-link fl" style={{ color: "white", padding: 3 }} data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"> filter with school  <i class="fas fa-sort-amount-down"></i></a>
                             <div className="dropdown-menu">
                                 {
                                     schools.map((s) => {
                                         return (
-                                            <a onClick={() => searchSchool(s)} className="dropdown-item" href="#">{s}</a>
+                                            <a onClick={() => searchSchool(s)} className="dropdown-item my-4" href="#">{s}</a>
                                         )
                                     })
                                 }
@@ -189,10 +183,7 @@ function Departments(props) {
                             <div className="col-md-3 my-4">
                                 <div className="dept-card p-3" onClick={() => {
                                     props.history.push({
-                                        pathname: "/levels",
-                                        state: {
-                                            department: d.name
-                                        }
+                                        pathname: `/levels/${d.name}`
                                     })
                                 }}>
                                     {
@@ -211,7 +202,7 @@ function Departments(props) {
                                             <p>{d.school}</p>
 
                                     }
-                                  
+
 
                                     <p>Updated: {d.last_updated}</p>
                                     <div style={{ fontWeight: "lighter", fontSize: 12 }} className="btn btn-light  ">
@@ -227,10 +218,7 @@ function Departments(props) {
                                 <div className="col-md-3 my-4">
                                     <div className="dept-card p-3" onClick={() => {
                                         props.history.push({
-                                            pathname: "/levels",
-                                            state: {
-                                                department: d.name
-                                            }
+                                            pathname: `/levels/${d.name}`
                                         })
                                     }}>
                                         <h4>
@@ -268,7 +256,7 @@ function Departments(props) {
                     {
                         Array(page_size).fill().map((number, i) => {
                             return (
-                                <div style={{ padding: "10px 20px" }} onClick={() =>{ setPage(i); setSearchSchool(false); setSearchResult([]); window.scrollTo(0,0)}} className={page === i ? "btn mx-1 btn-secondary text-light" : "btn mx-1 btn-light text-secondary"}>
+                                <div style={{ padding: "10px 20px" }} onClick={() => { setPage(i); setSearchSchool(false); setSearchResult([]); window.scrollTo(0, 0) }} className={page === i ? "btn mx-1 btn-secondary text-light" : "btn mx-1 btn-light text-secondary"}>
                                     {i + 1}
                                 </div>
                             )

@@ -9,7 +9,7 @@ import apiConfig from '../../config/api';
 import departments from './test_data';
 
 function Courses(props) {
-    console.log(props)
+    const {department, level}= props.match.params
     const [text, setText] = useState('')
     const [courses, setCourses] = useState([])
     const [once, setOnce] = useState(0)
@@ -44,7 +44,7 @@ function Courses(props) {
                 closeOnClickOutside: false,
                 buttons: false
             })
-        let response = await fetch(`${apiConfig.root}/get-courses/${props.location.state.department}/${props.location.state.level}`, {
+        let response = await fetch(`${apiConfig.root}/get-courses/${department}/${level}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/JSON"
@@ -64,7 +64,7 @@ function Courses(props) {
         <div className="col-12">
 
             <div className="container">
-                < h1 className="text-center mt-3"> {props.location.state.department} - {props.location.state.level} level</h1>
+                < h1 className="text-center mt-3"> {department} - {level} level</h1>
                 < h5 className="text-center mt-4"> Select a Course</h5>
                 <div className="col-md-6 offset-md-3">
                 <span className="justify-content-between col-md-12 d-flex align-items-center">
@@ -100,12 +100,7 @@ function Courses(props) {
                         <div className="col-md-3 my-4">
                         <div className="dept-card course p-3" onClick={() => {
                             props.history.push({
-                                pathname: `/course`,
-                                state: {
-                                    course: d.name,
-                                    department:props.location.state.department,
-                                    level: props.location.state.level
-                                }
+                                pathname: `/course/${d.school}/${department}/${level}/${d.name}`
                             })
                         }}>
                             <h4>
@@ -124,12 +119,7 @@ function Courses(props) {
                         <div className="col-md-3 my-4">
                             <div className="dept-card course p-3" onClick={() => {
                                 props.history.push({
-                                    pathname: `/course`,
-                                    state: {
-                                        course: d.name,
-                                        department:props.location.state.department,
-                                        level: props.location.state.level
-                                    }
+                                    pathname: `/course/${d.school}/${department}/${level}/${d.name}`
                                 })
                             }}>
                                 <h4>

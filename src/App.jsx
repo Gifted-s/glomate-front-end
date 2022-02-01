@@ -10,17 +10,15 @@ import NotFound from './components/Home/NotFound';
 function App() {
   return (
     <ToastProvider autoDismissTimeout={7000} autoDismiss={true}>
-    <div className="App">
-      <BrowserRouter>
-    
-        <Switch>
-        <Routes />
-        
-          
-        </Switch>
-        
-      </BrowserRouter>
-    </div>
+      <div className="App">
+        <BrowserRouter>
+
+          <Switch>
+            <Routes />
+          </Switch>
+
+        </BrowserRouter>
+      </div>
     </ToastProvider>
   )
 

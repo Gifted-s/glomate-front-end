@@ -23,14 +23,14 @@ function Routes(props) {
                 <button style={{ position: "absolute", right: 10, top: 20, borderRadius: 18 }} onClick={() => {
                     props.history.push("/add-material")
                 }} className="btn btn-primary">
-                    Add Material <i class="fas fa-plus-square"></i>
+                    Add Material <i class="fas fa-plus"></i>
                 </button>
             </div>
             <div style={{ marginTop: 70 }}>
                 <Route path="/" exact component={Departments} ></Route>
-                <Route path="/courses"  component={Courses} ></Route>
-                <Route path="/course"  component={Home} ></Route>
-                <Route path="/levels"  component={Levels} ></Route>
+                <Route path="/courses/:department/:level"  component={Courses} ></Route>
+                <Route path="/course/:school/:department/:level/:course"  component={Home} ></Route>
+                <Route path="/levels/:department"  component={Levels} ></Route>
                 <Route path="/add-material" component={Add_Material} ></Route>
                 {/* <Route  exact={true} component={NotFound} /> */}
                 <Footer />

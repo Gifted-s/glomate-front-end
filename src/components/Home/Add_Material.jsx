@@ -26,7 +26,11 @@ function Add_Material() {
     const [courses, setCourses] = useState([])
     const [course, setCourse] = useState("")
     const [file_struct, setFileStruct] = useState(null)
-
+    const [departmentError, setDepartmentError] = useState(false)
+    const [schoolError, setSchoolError] = useState(false)
+    const [levelError, setLevelError] = useState(false)
+    const [courseError, setCourseError] = useState(false)
+    const [courseMaterialError, setCourseMaterialError] = useState(false)
     useEffect(() => {
         setOnce(1)
         getDepartments()
@@ -39,7 +43,19 @@ function Add_Material() {
         "500"
     ]
     async function saveMaterial() {
-        let file_s;
+        let file_s = {}
+        if (!department) {
+            setDepartmentError(true)
+        }
+        if (!schoool) {
+            setSchoolError(true)
+        }
+        if (!level || level == "Select Level") {
+            setLevelError(true)
+        }
+        if (!course) {
+            setCourseError(true)
+        }
         if (file_struct) {
             file_s = file_struct
         } else if (link) {
@@ -53,10 +69,12 @@ function Add_Material() {
 
         }
         else {
-            addToast('Please add material file or link', { appearance: 'error' });
-            return
+            setCourseMaterialError(true)
         }
 
+        if (!department || !schoool || !level || !file_s.name || !course) {
+            return
+        }
         swal(
             <div>
                 <Spinner color="danger" />
@@ -73,7 +91,7 @@ function Add_Material() {
             },
             body: JSON.stringify({
                 "name": course,
-                "dept":department,
+                "dept": department,
                 "level": level,
                 "last_updated": new Date(Date.now()).toDateString(),
                 "school": schoool,
@@ -88,8 +106,8 @@ function Add_Material() {
             swal.close()
             addToast('Material saved to Database', { appearance: 'success' });
             setLink("")
-            //setFileStruct(null)
-            window.scrollTo(0,0)
+            setFileStruct(null)
+            window.scrollTo(0, 0)
             return
         }
         swal.close()
@@ -109,7 +127,8 @@ function Add_Material() {
         //sendToServer(file_struture)
 
     }
-    async function getCourses(l) {
+    async function getCourses(l, d) {
+        console.log(l, d)
         swal(
             <div>
                 <Spinner color="danger" />
@@ -119,16 +138,19 @@ function Add_Material() {
                 closeOnClickOutside: false,
                 buttons: false
             })
-        let response = await fetch(`${apiConfig.root}/get-courses/${department}/${l}`, {
+        let response = await fetch(`${apiConfig.root}/get-courses/${d ? d : department}/${l}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/JSON"
             }
         })
+        setCourses([])
         const result = await response.json()
+        console.log(result)
         if (result.status === "success") {
             if (result.body !== null) {
                 setCourses(result.body)
+                console.log(result.body)
             }
 
             swal.close()
@@ -155,9 +177,9 @@ function Add_Material() {
         const result = await response.json()
         if (result.status === "success") {
             if (result.body) {
-                setDepartments(result.body.sort(function(a, b){
-                    if(a.name < b.name) { return -1; }
-                    if(a.name > b.name) { return 1; }
+                setDepartments(result.body.sort(function (a, b) {
+                    if (a.name < b.name) { return -1; }
+                    if (a.name > b.name) { return 1; }
                     return 0;
                 }))
                 //   setDepartment(result.body[0].name)
@@ -173,38 +195,7 @@ function Add_Material() {
         }
     }
 
-    async function sendToServer(file_struture) {
-
-        swal(
-            <div>
-                <Spinner color="danger" />
-                <p className="text-center">Saving to Database...</p>
-            </div>
-            , {
-                closeOnClickOutside: false,
-                buttons: false
-            })
-        let response = await fetch(`${apiConfig.root}/upload-file`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/JSON"
-            },
-            body: JSON.stringify(file_struture)
-        })
-        const result = await response.json()
-        if (result.status === "success") {
-            swal.close()
-            addToast('File saved to Database', { appearance: 'success' });
-            setLink("")
-           
-            return
-        }
-        swal.close()
-        addToast('There is an issue with the network at this point please try again', { appearance: 'error' });
-    }
-
-
-
+  
 
     async function handleUpload(fle) {
         setIsUpLoading(true)
@@ -272,12 +263,6 @@ function Add_Material() {
             () => {
                 // Upload completed successfully, now we can get the download URL
                 getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-                    //                     lastModified: 1640472733008
-                    // lastModifiedDate: Sat Dec 25 2021 23:52:13 GMT+0100 (West Africa Standard Time) {}
-                    // name: "Screen Shot 2021-12-25 at 11.52.07 PM.png"
-                    // size: 4389163
-                    // type: "image/png"
-                    // webkitRelativePath: ""
                     const file_struture = {
                         name: fle.name,
                         type: fle.type,
@@ -285,9 +270,7 @@ function Add_Material() {
                         size: parseFloat((fle.size / 1000000).toFixed(2)),
                         download_link: url
                     }
-
                     //console.log('File available at', file_struture);
-
                     setProgress(0)
                     setIsUpLoading(false)
                     setFile("")
@@ -307,10 +290,21 @@ function Add_Material() {
 
             <div class="mb-3">
                 <label for="exampleInputEmail1" class="form-label">Department: </label>
+                {
+                    departmentError && <div style={{ borderColor: "red", borderRadius: 10, padding: 6, marginBottom: 10 }} className="alert-danger">
+                        Please select a department here
+                    </div>
+                }
+
                 <select value={department} class="form-select" onChange={async (e) => {
                     setDepartment(e.target.value);
+                    setDepartmentError(false);
+                    setSchoolError(false)
                     let d = departments.find((d) => d.name === e.target.value)
                     setSchool(d.school)
+                    if (level !== "Select Level") {
+                        await getCourses(level, e.target.value)
+                    }
                     //await getCourses()
                 }} aria-label="Default select example">
                     <option value="">Select Department</option>
@@ -325,24 +319,27 @@ function Add_Material() {
                 </select>
                 {open_department && <input onChange={(e) => {
                     setDepartment(e.target.value)
+                    setDepartmentError(false)
                 }} type="text" class="form-control mt-1"
                     placeholder="Enter department name"
                 />}
                 <button type="button" onClick={() => {
                     setDepartmentOpen(!open_department)
                 }} className="btn btn-primary mt-1 ur">
-                    {open_department ? <i class="far fa-window-close"></i> : ("Add new department")}
+                    {open_department ? <i className="fas fa-times"></i> : ("Add new department")} 
                 </button>
-
             </div>
-
-
             <div class="mb-3">
                 <label for="exampleInputEmail1" class="form-label">School: </label>
+                {
+                    schoolError && <div style={{ borderColor: "red", borderRadius: 10, padding: 6, marginBottom: 10 }} className="alert-danger">
+                        Please select a school here
+                    </div>
+                }
 
                 <select disabled={!open_department} value={schoool} onChange={async (e) => {
                     setSchool(e.target.value);
-
+                    setSchoolError(false)
                 }} class="form-select" aria-label="Default select example">
                     {open_department && <option value="">Select School</option>}
                     {
@@ -360,6 +357,7 @@ function Add_Material() {
                 />}
                 <button type="button" onClick={() => {
                     setOpenSchool(!open_school)
+                    setSchoolError(false)
                 }} className="btn btn-primary mt-1 ur">
                     {open_school ? <i class="far fa-window-close"></i> : ("Add new school")}
                 </button>
@@ -369,9 +367,16 @@ function Add_Material() {
 
             <div class="mb-3">
                 <label for="exampleInputPassword1" class="form-label">Level: </label>
+                {
+                    levelError && <div style={{ borderColor: "red", borderRadius: 10, padding: 6, marginBottom: 10 }} className="alert-danger">
+                        Please select a level here
+                    </div>
+                }
+
                 <select value={level} onChange={
                     async (e) => {
                         setLevel(e.target.value);
+                        setLevelError(false)
                         await getCourses(e.target.value)
 
 
@@ -391,9 +396,14 @@ function Add_Material() {
 
             <div class="mb-3">
                 <label for="exampleInputPassword1" class="form-label">Select Course: </label>
-
-                <select onChange={(e)=>{
-                  setCourse(e.target.value)
+                {
+                    courseError && <div style={{ borderColor: "red", borderRadius: 10, padding: 6, marginBottom: 10 }} className="alert-danger">
+                        Please select a course here
+                    </div>
+                }
+                <select onChange={(e) => {
+                    setCourse(e.target.value)
+                    setCourseError(false)
                 }} class="form-select" aria-label="Default select example">
                     <option >Select level to view courses</option>
                     {
@@ -411,8 +421,9 @@ function Add_Material() {
 
                 </select>
 
-                {open_course && <input onChange={(e)=>{
-setCourse(e.target.value)
+                {open_course && <input onChange={(e) => {
+                    setCourse(e.target.value)
+                    setCourseError(false)
                 }} type="text" class="form-control mt-1"
                     placeholder="Enter course name"
                 />}
@@ -430,6 +441,11 @@ setCourse(e.target.value)
 
             <div class="mb-3">
                 <label for="exampleInputPassword1" class="form-label  my-2 jk">Add file or link of material: </label>
+                {
+                    courseMaterialError && <div style={{ borderColor: "red", borderRadius: 10, padding: 6, marginBottom: 10 }} className="alert-danger">
+                        Please upload a course material or type in link to material
+                    </div>
+                }
                 <div className="row">
 
 
@@ -449,10 +465,11 @@ setCourse(e.target.value)
 
                         }}
                             onChange={async (e) => {
-                                setFile(e.target.files[0])
-
-                                await handleUpload(e.target.files[0])
-
+                                if (e.target.files[0]) {
+                                    setFile(e.target.files[0])
+                                    setCourseMaterialError(false)
+                                    await handleUpload(e.target.files[0])
+                                }
                             }} type="file" />
                     </div>
 
@@ -478,6 +495,7 @@ setCourse(e.target.value)
                                 value={link}
                                 placeholder="enter link here"
                                 onChange={(e) => {
+                                    setCourseMaterialError(false)
                                     setLink(e.target.value)
 
                                 }} className="col-md-12 ns" />
