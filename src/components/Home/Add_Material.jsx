@@ -25,25 +25,22 @@ function Add_Material() {
     const [schoool, setSchool] = useState("")
     const [courses, setCourses] = useState([])
     const [course, setCourse] = useState("")
-    const [file_struct, setFileStruct] = useState(null)
+    const [file_structs, setFileStructs] = useState([])
     const [departmentError, setDepartmentError] = useState(false)
     const [schoolError, setSchoolError] = useState(false)
     const [levelError, setLevelError] = useState(false)
     const [courseError, setCourseError] = useState(false)
     const [courseMaterialError, setCourseMaterialError] = useState(false)
+    const [num_uploaded, setNumUploaded] = useState(0)
     useEffect(() => {
         setOnce(1)
         getDepartments()
     }, [once])
-    const levels = [
-        "100",
-        "200",
-        "300",
-        "400",
-        "500"
-    ]
+    const levels = ["100", "200", "300", "400", "500"]
     async function saveMaterial() {
-        let file_s = {}
+        console.log(file_structs)
+
+        let file_s = []
         if (!department) {
             setDepartmentError(true)
         }
@@ -56,23 +53,21 @@ function Add_Material() {
         if (!course) {
             setCourseError(true)
         }
-        if (file_struct) {
-            file_s = file_struct
+        if (file_structs.length > 0) {
+            file_s = file_structs
         } else if (link) {
-            file_s = {
+            file_s = [{
                 name: link.slice(8, 24),
                 type: "text/UTF-8",
                 date_added: new Date(Date.now()).toDateString(),
                 size: 1,
                 download_link: link
-            }
-
+            }]
         }
         else {
             setCourseMaterialError(true)
         }
-
-        if (!department || !schoool || !level || !file_s.name || !course) {
+        if (!department || !schoool || !level || !file_s.length === 0 || !course) {
             return
         }
         swal(
@@ -95,9 +90,7 @@ function Add_Material() {
                 "level": level,
                 "last_updated": new Date(Date.now()).toDateString(),
                 "school": schoool,
-                "lectures": [
-                    file_s
-                ]
+                "lectures": file_s
             })
         })
         const result = await response.json()
@@ -106,29 +99,15 @@ function Add_Material() {
             swal.close()
             addToast('Material saved to Database', { appearance: 'success' });
             setLink("")
-            setFileStruct(null)
+            setFileStructs([])
             window.scrollTo(0, 0)
             return
         }
         swal.close()
         addToast('There is an issue with the network at this point please try again', { appearance: 'error' });
     }
-    function saveLink() {
-        console.log(link.slice(8, 24), link)
-        const file_struture = {
-            name: link.slice(8, 24),
-            type: "text/UTF-8",
-            date_added: new Date(Date.now()).toDateString(),
-            size: 1,
-            download_link: link
-        }
 
-        console.log(file_struture, "link")
-        //sendToServer(file_struture)
-
-    }
     async function getCourses(l, d) {
-        console.log(l, d)
         swal(
             <div>
                 <Spinner color="danger" />
@@ -162,7 +141,7 @@ function Add_Material() {
         swal(
             <div>
                 <Spinner color="danger" />
-                <p className="text-center">Loading page.</p>
+                <p className="text-center">Loading page...</p>
             </div>
             , {
                 closeOnClickOutside: false,
@@ -195,11 +174,9 @@ function Add_Material() {
         }
     }
 
-  
 
-    async function handleUpload(fle) {
-        setIsUpLoading(true)
-        console.log(fle)
+
+    function handleUpload(fle) {
         swal(
             <div>
                 <Spinner color="danger" />
@@ -209,6 +186,7 @@ function Add_Material() {
                 closeOnClickOutside: false,
                 buttons: false
             })
+        setIsUpLoading(true)
         setProgress(1)
         const storage = getStorage();
 
@@ -276,8 +254,11 @@ function Add_Material() {
                     setFile("")
                     swal.close()
                     addToast('Upload succcessful, click submit to complete the saving', { appearance: 'success' });
-                    setFileStruct(file_struture)
-                    console.log(file_struture)
+                    let result = file_structs
+                    result.push(file_struture)
+                    setFileStructs(result)
+                    console.log("Here:  ", result)
+
                     //sendToServer(file_struture)
                 });
             }
@@ -326,7 +307,7 @@ function Add_Material() {
                 <button type="button" onClick={() => {
                     setDepartmentOpen(!open_department)
                 }} className="btn btn-primary mt-1 ur">
-                    {open_department ? <i className="fas fa-times"></i> : ("Add new department")} 
+                    {open_department ? <i className="fas fa-times"></i> : ("Add new department")}
                 </button>
             </div>
             <div class="mb-3">
@@ -440,7 +421,7 @@ function Add_Material() {
             </div>
 
             <div class="mb-3">
-                <label for="exampleInputPassword1" class="form-label  my-2 jk">Add file or link of material: </label>
+                <label for="exampleInputPassword1" class="form-label  my-2 jk">Add file(s) or link of material: </label>
                 {
                     courseMaterialError && <div style={{ borderColor: "red", borderRadius: 10, padding: 6, marginBottom: 10 }} className="alert-danger">
                         Please upload a course material or type in link to material
@@ -455,7 +436,7 @@ function Add_Material() {
                         <label for="exampleInputPassword1" class="form-label">{isUploading ? `Uploading....${Math.floor(progress)}% complete` : `Select material file: 
                     
                     ( applicable if material exist in .pdf, .doc, docx, png, jpg , .pptx, pptm, .ppt,  .mp3, .mp4, .zip, .pps and .txt )`}</label>
-                        <input style={{
+                        <input multiple style={{
                             borderRadius: "7%",
                             border: "none",
                             justifyContent: "center",
@@ -464,12 +445,17 @@ function Add_Material() {
                             width: 180,
 
                         }}
-                            onChange={async (e) => {
-                                if (e.target.files[0]) {
-                                    setFile(e.target.files[0])
-                                    setCourseMaterialError(false)
-                                    await handleUpload(e.target.files[0])
+                            onChange={(e) => {
+                                if (e.target.files.length > 0) {
+                                    setNumUploaded(e.target.files.length)
+                                    new Array(...e.target.files).forEach(file => {
+                                        setFile(file)
+                                        setCourseMaterialError(false)
+                                        handleUpload(file)
+
+                                    })
                                 }
+
                             }} type="file" />
                     </div>
 
